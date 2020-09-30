@@ -1,4 +1,4 @@
-FROM golang:alpine 
+FROM golang:alpine as builder 
 
 #set req env varss needed for our image
 ENV GO111MODULE=on \
@@ -28,9 +28,10 @@ WORKDIR /dist
 # Move to /dist dir as the place for resulting binary folder
 RUN cp /build/main .
 
-# Export 3000
+# build small image
+FROM scratch
 
-EXPOSE 3000
+COPY --from=builder /dist/main /
 
-# Command to run when starting the container
-CMD ["/dist/main"]
+# cmd to run
+ENTRYPOINT ["/main"] 
